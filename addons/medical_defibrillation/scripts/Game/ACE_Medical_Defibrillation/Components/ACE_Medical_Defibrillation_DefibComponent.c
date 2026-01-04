@@ -198,7 +198,6 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	private void OnDefibProgressChanged()
 	{
-		PrintFormat("%1::OnDefibDataChanged | Data updated to client...", this.ClassName());
 		Replication.BumpMe();
 	}
 	

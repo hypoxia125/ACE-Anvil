@@ -111,23 +111,22 @@ class ACE_Medical_Defibrillation_DefibStatesSystem : GameSystem
 		super.OnDiag(timeSlice);
 		
 		DbgUI.Begin(string.Format("ACE_Medical_Defibrillation_DefibStatesSystem"));
+		DbgUI.Text("Total Active Defibrillators: " + m_pScheduler.GetJobs().Count());
 		
-		DbgUI.Text("Defibrillators: " + m_pScheduler.GetJobs().Count());
-		
-		for (int index = 0; index < m_pScheduler.GetJobs().Count(); index++)
+		IEntity target;
+		ACE_Medical_Defibrillation_DefibComponent defibComponent;
+		if (!ACE_Medical_Defibrillation_DiagTools.GetDiagTargetDefib(target, defibComponent))
 		{
-			ACE_Medical_Defibrillation_DefibStateMachine defibMachine = m_pScheduler.GetJobs().Get(index);
-			ACE_Medical_Defibrillation_DefibContext context = defibMachine.GetContext();
-			ACE_Medical_Defibrillation_DefibComponent component = context.m_pDefibrillator;
-			if (!component)
-				continue;
-			
-			DbgUI.Text(string.Format("Defib_%1::CurrentState | %2", index, SCR_Enum.GetEnumName(ACE_Medical_Defibrillation_EDefibStateID, component.GetDefibStateID())));
-			DbgUI.Text(string.Format("Defib_%1::CPR Cooldown | %2", index, component.GetDefibProgressData().GetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown) / 1000));
-			DbgUI.Text(string.Format("Defib_%1::Analysis Percent | %2", index, component.GetDefibProgressData().GetPercentComplete(ACE_Medical_Defibrillation_EDefibProgressCategory.Analysis)));
-			DbgUI.Text(string.Format("Defib_%1::Charge Percent | %2", index, component.GetDefibProgressData().GetPercentComplete(ACE_Medical_Defibrillation_EDefibProgressCategory.Charge)));
-			DbgUI.Text(string.Format("Defib_%1::State Time | %2", index, component.GetDefibProgressData().GetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.StateTimeElapsed) / 1000));
+			DbgUI.End();
+			return;
 		}
+		
+		DbgUI.Spacer(10);
+		DbgUI.Text(string.Format("Connected Patient: %1", defibComponent.GetPatient()));
+		DbgUI.Text(string.Format("Current State: %1", SCR_Enum.GetEnumName(ACE_Medical_Defibrillation_EDefibStateID, defibComponent.GetDefibStateID())));
+		DbgUI.Text(string.Format("Time In State: %1", defibComponent.GetDefibProgressData().GetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.StateTimeElapsed) / 1000));
+		DbgUI.Text(string.Format("Analysis Percent: %1", defibComponent.GetDefibProgressData().GetPercentComplete(ACE_Medical_Defibrillation_EDefibProgressCategory.Analysis)));
+		DbgUI.Text(string.Format("Charge Percent: %1", defibComponent.GetDefibProgressData().GetPercentComplete(ACE_Medical_Defibrillation_EDefibProgressCategory.Charge)));
 		DbgUI.End();
 	}
 #endif

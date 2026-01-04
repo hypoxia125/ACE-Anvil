@@ -37,7 +37,6 @@ class ACE_Medical_Defibrillation_UserActions_DefibConnect : ScriptedUserAction
 		m_pNearestDefib = query.GetEntity(GetOwner().GetOrigin());
 		if (!m_pNearestDefib)
 		{
-			PrintFormat("%1::CanBeShownScript | No nearby defib found!", this.ClassName());
 			return false;
 		}
 		
@@ -59,8 +58,6 @@ class ACE_Medical_Defibrillation_UserActions_DefibConnect : ScriptedUserAction
 	{
 		if (!Replication.IsServer())
 			return;
-		
-		PrintFormat("%1::PerformAction | Server Execution: %2", this.ClassName(), Replication.IsServer());
 		
 		ACE_Medical_Defibrillation_QueryNearestDefib query = new ACE_Medical_Defibrillation_QueryNearestDefib(3);
 		m_pNearestDefib = null;

@@ -22,7 +22,6 @@ class ACE_Medical_Defibrillation_UserAction_DefibDisconnect : ScriptedUserAction
 		IEntity patient = defibComponent.GetPatient();
 		if (!patient)
 		{
-			PrintFormat("%1::CanBeShownScript | Defib has no patient!", this.ClassName());
 			return false;
 		}
 		
@@ -34,8 +33,6 @@ class ACE_Medical_Defibrillation_UserAction_DefibDisconnect : ScriptedUserAction
 	{
 		if (!Replication.IsServer())
 			return;
-		
-		PrintFormat("%1::PerformAction | Server Execution: %2", this.ClassName(), Replication.IsServer());
 		
 		ACE_Medical_Defibrillation_DefibComponent defibComponent = ACE_Medical_Defibrillation_DefibComponent.Cast(GetOwner().FindComponent(ACE_Medical_Defibrillation_DefibComponent));
 		if (!defibComponent)

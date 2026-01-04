@@ -32,6 +32,10 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
   MeshObject "{64FB47CE0046FB12}" {
    Object "{DA5DDF2E4860BBF6}Prefabs/Items/Medical Defibrillation/ACE_DefibrillatorAED.xob"
   }
+  RigidBody "{68483DE61388D41E}" {
+   Mass 3.2
+   ModelGeometry 1
+  }
   ActionsManagerComponent "{508AB5952B584B2E}" {
    additionalActions {
     ACE_NoUserAction "{51EC842E3A187379}" {
