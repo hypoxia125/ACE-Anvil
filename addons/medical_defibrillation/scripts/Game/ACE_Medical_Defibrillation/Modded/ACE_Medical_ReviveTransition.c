@@ -21,12 +21,13 @@ modded class ACE_Medical_ReviveTransition
 		
 		float result = super.ComputeReviveChance(context);
 		
-		if (s_pDefibSettings.m_bDefibIsMandatory && context.m_pVitals.GetShocksDelivered() == 0)
+		bool isDefibMandatory = s_pDefibSettings.m_bDefibIsMandatory;
+		int shocks = context.m_pVitals.GetShocksDelivered();
+		
+		if (isDefibMandatory && shocks == 0)
 			result = 0;
 		else
 		{
-			int shocks = context.m_pVitals.GetShocksDelivered();
-			
 			float bonusMultiplier = 1.0 - Math.Pow(0.5, shocks);
 			float bonus = maxBonus * bonusMultiplier;
 			
