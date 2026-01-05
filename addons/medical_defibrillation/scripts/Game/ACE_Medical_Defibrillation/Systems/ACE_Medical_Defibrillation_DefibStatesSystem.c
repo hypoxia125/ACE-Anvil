@@ -115,13 +115,20 @@ class ACE_Medical_Defibrillation_DefibStatesSystem : GameSystem
 		
 		IEntity target;
 		ACE_Medical_Defibrillation_DefibComponent defibComponent;
+		string targetType = "Camera Target";
+		
 		if (!ACE_Medical_Defibrillation_DiagTools.GetDiagTargetDefib(target, defibComponent))
 		{
-			DbgUI.End();
-			return;
+			float distance = 3;
+			ACE_Medical_Defibrillation_DiagTools.GetDiagNearestDefib(target, defibComponent, distance);
+			targetType = string.Format("Nearest Defib (%1m)", distance);
 		}
 		
+		if (!defibComponent)
+			return;
+		
 		DbgUI.Spacer(10);
+		DbgUI.Text(string.Format("Target Type: %1", targetType));
 		DbgUI.Text(string.Format("Connected Patient: %1", defibComponent.GetPatient()));
 		DbgUI.Text(string.Format("Current State: %1", SCR_Enum.GetEnumName(ACE_Medical_Defibrillation_EDefibStateID, defibComponent.GetDefibStateID())));
 		DbgUI.Text(string.Format("Time In State: %1", defibComponent.GetDefibProgressData().GetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.StateTimeElapsed) / 1000));
