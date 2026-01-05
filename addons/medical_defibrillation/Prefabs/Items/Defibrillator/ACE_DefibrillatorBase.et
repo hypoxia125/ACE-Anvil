@@ -30,7 +30,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    }
   }
   MeshObject "{64FB47CE0046FB12}" {
-   Object "{DA5DDF2E4860BBF6}Prefabs/Items/Medical Defibrillation/ACE_DefibrillatorAED.xob"
+   Object "{DA5DDF2E4860BBF6}test/Prefabs/Items/Medical Defibrillation/ACE_DefibrillatorAED.xob"
   }
   RigidBody "{68483DE61388D41E}" {
    Mass 3.2
@@ -38,7 +38,9 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
   }
   ActionsManagerComponent "{508AB5952B584B2E}" {
    additionalActions {
-    ACE_NoUserAction "{51EC842E3A187379}" {
+    ACE_Medical_Defibrillation_UserAction_DefibPickup "{51EC842E3A187379}" {
+     Duration 1
+     "Sort Priority" 10
     }
     ACE_Medical_Defibrillation_UserAction_DefibDisconnect "{671C09FF5A7200A1}" {
      ParentContextList {
@@ -58,16 +60,6 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
       Name "#ACE-Medical-Defibrillation-DeliverShock"
      }
      Duration 1
-    }
-    ACE_Medical_Defibrillation_UserAction_DefibPickup "{684476916E9E30B7}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6844769117FA5C78}" {
-      Name "#ACE-Medical-Defibrillation-DefibPickup"
-     }
-     Duration 1
-     "Sort Priority" 10
     }
    }
   }
