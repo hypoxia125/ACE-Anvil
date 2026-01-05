@@ -10,7 +10,7 @@ modded class ACE_Medical_ReviveTransition
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	override float ComputeReviveChance(ACE_Medical_CharacterContext context)
+	float ComputeReviveChanceShockBonus(ACE_Medical_CharacterContext context)
 	{
 		float maxBonus = 0.3;
 		ACE_Medical_Defibrillation_Defibrillation_Settings defibSettings = ACE_SettingsHelperT<ACE_Medical_Defibrillation_Defibrillation_Settings>.GetModSettings();
@@ -18,6 +18,19 @@ modded class ACE_Medical_ReviveTransition
 		{
 			maxBonus = defibSettings.m_fMaxReviveChanceBonus;
 		}
+		
+		int shocks = context.m_pVitals.GetShocksDelivered();
+		
+		float bonusMultiplier = 1.0 - Math.Pow(0.5, shocks);
+		float bonus = maxBonus * bonusMultiplier;
+		
+		return bonus;
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	override float ComputeReviveChance(ACE_Medical_CharacterContext context)
+	{
+		ACE_Medical_Defibrillation_Defibrillation_Settings defibSettings = ACE_SettingsHelperT<ACE_Medical_Defibrillation_Defibrillation_Settings>.GetModSettings();
 		
 		float result = super.ComputeReviveChance(context);
 		
@@ -27,15 +40,10 @@ modded class ACE_Medical_ReviveTransition
 		if (isDefibMandatory && shocks == 0)
 			result = 0;
 		else
-		{
-			float bonusMultiplier = 1.0 - Math.Pow(0.5, shocks);
-			float bonus = maxBonus * bonusMultiplier;
-			
-			result += bonus;
+		{			
+			result += ComputeReviveChanceShockBonus(context);
 			result = Math.Min(result, 1.0);
 		}
-		
-		PrintFormat("%1::ComputeReviveChance | Chance - %2", this.ClassName(), result);
 		
 		return result;
 	}

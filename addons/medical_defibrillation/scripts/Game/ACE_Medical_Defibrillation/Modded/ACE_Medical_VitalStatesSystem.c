@@ -23,6 +23,7 @@ modded class ACE_Medical_VitalStatesSystem
 		DbgUI.Begin(string.Format("ACE Defibrillation: (%1)", targetType), 0, 500);
 		DbgUI.Text(string.Format("Cardiac Rhythm:                      %1", SCR_Enum.GetEnumName(ACE_Medical_Defibrillation_ECardiacRhythm, component.GetCardiacRhythm())));
 		DbgUI.Text(string.Format("Shocks Delivered:                    %1", component.GetShocksDelivered()));
+		DbgUI.Text(string.Format("Revive Chance Bonus:                 %1", ACE_DiagTools.GetReviveChanceShockBonus(target)));
 		
 		DbgUI.Spacer(10);
 		
