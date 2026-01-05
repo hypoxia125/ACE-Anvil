@@ -47,7 +47,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
       "default"
      }
      UIInfo UIInfo "{671C09FF5F06B782}" {
-      Name "#ACE-Medical-Defibrillation-DisconnectPatient"
+      Name "#ACE-MedicalDefibrillation_UserAction_DisconnectPatient"
      }
      Duration 1
      "Sort Priority" 1
@@ -57,7 +57,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
       "default"
      }
      UIInfo UIInfo "{673856DECD3BB5B7}" {
-      Name "#ACE-Medical-Defibrillation-DeliverShock"
+      Name "#ACE-MedicalDefibrillation_UserAction_DeliverShock"
      }
      Duration 1
     }
