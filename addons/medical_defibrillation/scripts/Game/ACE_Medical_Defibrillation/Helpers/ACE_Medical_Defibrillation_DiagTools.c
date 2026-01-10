@@ -1,6 +1,7 @@
 #ifdef ENABLE_DIAG
 class ACE_Medical_Defibrillation_DiagTools
 {
+	//------------------------------------------------------------------------------------------------
 	static bool GetDiagTargetDefib(out IEntity target, out ACE_Medical_Defibrillation_DefibComponent defibComponent)
 	{
 		CameraManager cameraManager = GetGame().GetCameraManager();
@@ -22,6 +23,7 @@ class ACE_Medical_Defibrillation_DiagTools
 		return true;
 	}
 	
+	//------------------------------------------------------------------------------------------------
 	static bool GetDiagNearestDefib(out IEntity target, out ACE_Medical_Defibrillation_DefibComponent defibComponent, float distance = 3)
 	{
 		IEntity player = GetGame().GetPlayerController().GetControlledEntity();
@@ -40,6 +42,32 @@ class ACE_Medical_Defibrillation_DiagTools
 			return false;
 		
 		return true;
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	static float GetReviveChanceShockBonus(IEntity target)
+	{
+		SCR_ChimeraCharacter char = SCR_ChimeraCharacter.Cast(target);
+		if (!char)
+			return -1;
+		
+		ACE_Medical_CharacterContext context = new ACE_Medical_CharacterContext(char);
+		ACE_Medical_ReviveTransition transition = new ACE_Medical_ReviveTransition(ACE_Medical_EVitalStateID.ANY, ACE_Medical_EVitalStateID.ANY);
+		
+		return transition.ComputeReviveChanceShockBonus(context);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	static float GetReviveChance(IEntity target)
+	{
+		SCR_ChimeraCharacter char = SCR_ChimeraCharacter.Cast(target);
+		if (!char)
+			return -1;
+		
+		ACE_Medical_CharacterContext context = new ACE_Medical_CharacterContext(char);
+		ACE_Medical_ReviveTransition transition = new ACE_Medical_ReviveTransition(ACE_Medical_EVitalStateID.ANY, ACE_Medical_EVitalStateID.ANY);
+		
+		return transition.ComputeReviveChance(context);
 	}
 }
 #endif
