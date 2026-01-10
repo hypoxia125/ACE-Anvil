@@ -16,6 +16,9 @@ class ACE_Medical_Defibrillation_ConnectedState : ACE_Medical_Defibrillation_IDe
 	{
 		super.OnUpdate(context, timeSlice);
 		
+		// Reduce CPR cooldown
+		context.m_pDefibrillator.GetDefibProgressData().ModifyTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown, -timeSlice);
+		
 		if (context.m_pDefibrillator.GetDefibProgressData().GetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown) > 0)
 		{
 			// Remind players to do CPR

@@ -24,9 +24,6 @@ class ACE_Medical_Defibrillation_IDefibState : ACE_FSM_IState<ACE_Medical_Defibr
 		super.OnUpdate(context, timeSlice);
 		
 		// Update total time in state
-		context.m_pDefibrillator.GetDefibProgressData().ModifyTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.StateTimeElapsed, timeSlice);
-		
-		// Reduce CPR cooldown
-		context.m_pDefibrillator.GetDefibProgressData().ModifyTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown, -timeSlice);
+		context.m_pDefibrillator.GetDefibProgressData().ModifyTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.StateTimeElapsed, timeSlice, replicate : false);
 	}
 }

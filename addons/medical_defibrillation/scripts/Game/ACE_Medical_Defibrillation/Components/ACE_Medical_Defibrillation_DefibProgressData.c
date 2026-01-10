@@ -13,7 +13,7 @@ class ACE_Medical_Defibrillation_DefibProgressData : Managed
 	protected ref map<ACE_Medical_Defibrillation_EDefibProgressCategory, float> m_mDurations;
 	protected ref map<ACE_Medical_Defibrillation_EDefibProgressCategory, float> m_mTimers;
 	
-	ref ScriptInvoker m_OnDataChanged = new ScriptInvoker;
+	ref ScriptInvoker m_OnDataChanged = new ScriptInvoker();
 	
 	protected float m_fAnalysisDuration;
 	protected float m_fChargeDuration;
@@ -46,10 +46,11 @@ class ACE_Medical_Defibrillation_DefibProgressData : Managed
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	void SetDuration(ACE_Medical_Defibrillation_EDefibProgressCategory durationName, float value)
+	void SetDuration(ACE_Medical_Defibrillation_EDefibProgressCategory durationName, float value, bool replicate = true)
 	{
 		m_mDurations[durationName] = value;
-		m_OnDataChanged.Invoke();
+		if (replicate)
+			m_OnDataChanged.Invoke();
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -61,37 +62,41 @@ class ACE_Medical_Defibrillation_DefibProgressData : Managed
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	void SetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory timerName, float value)
+	void SetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory timerName, float value, bool replicate = true)
 	{
 		m_mTimers[timerName] = value;
-		m_OnDataChanged.Invoke();
+		if (replicate)
+			m_OnDataChanged.Invoke();
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	void ModifyTimer(ACE_Medical_Defibrillation_EDefibProgressCategory timerName, float value)
+	void ModifyTimer(ACE_Medical_Defibrillation_EDefibProgressCategory timerName, float value, bool replicate = true)
 	{
 		if (m_mTimers.Contains(timerName))
 		{
 			m_mTimers[timerName] = Math.Max(m_mTimers[timerName] + value, 0);
-			m_OnDataChanged.Invoke();
+			if (replicate)
+				m_OnDataChanged.Invoke();
 		}
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	void ResetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory timerName)
+	void ResetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory timerName, bool replicate = true)
 	{
 		m_mTimers[timerName] = 0;
-		m_OnDataChanged.Invoke();
+		if (replicate)
+			m_OnDataChanged.Invoke();
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	void ResetAll()
+	void ResetAll(bool replicate = true)
 	{
 		ResetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.Charge);
 		ResetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.Analysis);
 		ResetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown);
 		ResetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.StateTimeElapsed);
-		m_OnDataChanged.Invoke();
+		if (replicate)
+			m_OnDataChanged.Invoke();
 	}
 	
 	//------------------------------------------------------------------------------------------------
