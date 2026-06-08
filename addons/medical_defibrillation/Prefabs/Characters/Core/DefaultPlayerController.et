@@ -1,0 +1,19 @@
+SCR_PlayerController : "{6E2BB64764E3BE9B}Prefabs/Characters/Core/DefaultPlayerController.et" {
+ ID "1A9BA6BEFA06E3B1"
+ components {
+  SCR_HUDManagerComponent "{2FDC275D9EBCDB8B}" {
+   InfoDisplays {
+    ACE_Medical_ECGMonitorDisplay "{69916372838DBD92}" {
+     m_LayoutPath "{C3D3B09647F44A2A}UI/layouts/HUD/ECG/ECGDisplay.layout"
+     m_eLayer ALWAYS_TOP
+     m_aHandlers {
+      SCR_InfoDisplayHandler "{69916376ACAE4921}" {
+       m_bCanUpdate 1
+      }
+     }
+     m_eShow 7
+    }
+   }
+  }
+ }
+}

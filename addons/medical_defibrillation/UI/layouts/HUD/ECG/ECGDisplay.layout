@@ -1,0 +1,74 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Slot FrameWidgetSlot "{667B238989AA1DEF}" {
+  OffsetLeft 0
+  OffsetTop 0
+  SizeX 1920
+  OffsetRight -1920
+  SizeY 1080
+  OffsetBottom -1080
+  Alignment 0 0
+ }
+ {
+  VerticalLayoutWidgetClass "{69910A275C2AD69F}" {
+   Name "Layout"
+   Slot FrameWidgetSlot "{69910A275C2AD682}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 400
+    OffsetRight -400
+    SizeY 200
+    OffsetBottom -200
+   }
+   {
+    HorizontalLayoutWidgetClass "{69910A275B915529}" {
+     Name "TextContainer"
+     Slot LayoutSlot "{69910A275B91550B}" {
+     }
+     {
+      TextWidgetClass "{69910A2745FEDE04}" {
+       Name "Text1"
+       Slot LayoutSlot "{69910A2745FEDE6F}" {
+        Padding 0 0 3 0
+       }
+       Text "BPM"
+       "Font Size" 36
+       "Min Font Size" 36
+       "Horizontal Alignment" Center
+       "Vertical Alignment" Center
+      }
+      TextWidgetClass "{69910A274AFBD678}" {
+       Name "HeartRateValue"
+       Slot LayoutSlot "{69910A274AFBD65F}" {
+        Padding 3 0 0 0
+       }
+       Text "200"
+       "Font Size" 36
+       "Min Font Size" 36
+       FontProperties FontProperties "{69910A26C0D24FDB}" {
+       }
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{69910A275791A84E}" {
+     Name "CanvasContainer"
+     Slot LayoutSlot "{69910A275791AFB7}" {
+      FillWeight 3000
+     }
+     AllowWidthOverride 1
+     WidthOverride 400
+     AllowHeightOverride 1
+     HeightOverride 200
+     {
+      CanvasWidgetClass "{69910A2751433396}" {
+       Name "Canvas"
+       Slot AlignableSlot "{69910A2751433380}" {
+       }
+       SizeInUnits 400 200
+      }
+     }
+    }
+   }
+  }
+ }
+}
