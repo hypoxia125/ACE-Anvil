@@ -1,0 +1,25 @@
+FrameWidgetClass {
+ Name "DefibrillatorMenu"
+ {
+  OverlayWidgetClass "{6991715E38A4E7F0}" {
+   Name "Background"
+   Slot FrameWidgetSlot "{6991715E38A4E7DF}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX -500
+    OffsetRight 500
+    SizeY -370
+    OffsetBottom 400
+   }
+   Color 0 0 0 1
+  }
+  OverlayWidgetClass "{6991715F9785BFA0}" {
+   Name "MenuBase"
+   Slot FrameWidgetSlot "{6991715F9785BF93}" {
+   }
+  }
+ }
+}

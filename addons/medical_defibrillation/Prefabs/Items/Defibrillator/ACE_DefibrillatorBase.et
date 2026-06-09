@@ -55,6 +55,14 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
      }
      Duration 1
     }
+    ACE_Medical_Defibrillation_UserAction_DefibMenuOpen "{6991714AFA8E4D0C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6991714AE4837E76}" {
+      Name "PLACEHOLDER_OPEN_MENU"
+     }
+    }
    }
   }
  }

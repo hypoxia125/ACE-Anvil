@@ -1,0 +1,4 @@
+modded enum ChimeraMenuPreset
+{
+	ACE_Medical_Defibrillation_DefibrillatorMenu
+}
