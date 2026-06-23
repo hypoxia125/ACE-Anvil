@@ -1,4 +1,4 @@
-class ACE_Medical_Defibrillation_GlobalHelpers
+class ACE_Medical_Defibrillation_NetworkManager
 {
 	static ACE_Medical_NetworkComponent GetMedicalNetworkComponent(notnull SCR_ChimeraCharacter char)
 	{
@@ -19,23 +19,5 @@ class ACE_Medical_Defibrillation_GlobalHelpers
 			return null;
 		
 		return networkComponent;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	static float BpmToMs(float bpm)
-	{
-		if (bpm <= 0)
-			return 0.0;
-		
-		return (60.0 / bpm) * 1000.0;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	static float MsToBpm(float ms)
-	{
-		if (ms <= 0)
-			return 0.0;
-		
-		return 60.0 / (ms / 1000.0);
 	}
 }
