@@ -10,7 +10,7 @@ class ACE_Medical_Defibrillation_DisconnectedStateTransition : ACE_FSM_ITransiti
 	override bool ShouldBePerformed(ACE_Medical_Defibrillation_DefibContext context, float timeSlice)
 	{
 		IEntity patient = context.m_pDefibrillator.GetPatient();
-		if (!patient)
+		if (!patient || !context.m_pDefibrillator.DefibrillatorPatientInRange())
 			return true;
 		
 		return false;

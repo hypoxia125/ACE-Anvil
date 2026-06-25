@@ -128,6 +128,8 @@ class ACE_Medical_Defibrillation_Settings : ACE_ModSettings
     
     [Attribute(defvalue: "0.9", desc: "Maximum total revive bonus cap (never exceed this value).", params: "0 1", category: "Bonus Settings")]
     float m_fMaxTotalReviveBonus;
+	
+	const float m_fDefibrillatorConnectionRange = 3;
     
     // Realistic Preset (1) - Balanced, forgiving for CPR
     const float AED_ANALYSIS_DURATION_REALISTIC = 3;

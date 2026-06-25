@@ -131,6 +131,15 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
+	bool DefibrillatorPatientInRange()
+	{
+		if (!m_pPatient)
+			return false;
+		
+		return (vector.Distance(GetOwner().GetOrigin(), m_pPatient.GetOrigin())) <= m_pSettings.m_fDefibrillatorConnectionRange;
+	}
+	
+	//------------------------------------------------------------------------------------------------
 	ACE_Medical_Defibrillation_DefibStatesSystem GetDefibStatesSystem()
 	{
 		ChimeraWorld world = GetGame().GetWorld();

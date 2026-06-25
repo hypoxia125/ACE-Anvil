@@ -32,7 +32,7 @@ class ACE_Medical_Defibrillation_ScriptedUserAction_DefibConnect : ACE_Medical_D
 		if (!CanExecuteThisTick())
 			return (m_pNearestDefib && !PriorDefibFound());
 		
-		ACE_Medical_Defibrillation_QueryNearestDefib query = new ACE_Medical_Defibrillation_QueryNearestDefib(3);
+		ACE_Medical_Defibrillation_QueryNearestDefib query = new ACE_Medical_Defibrillation_QueryNearestDefib(m_pSettings.m_fDefibrillatorConnectionRange);
 		m_pNearestDefib = null;
 		m_pNearestDefib = query.GetEntity(GetOwner().GetOrigin());
 		if (!m_pNearestDefib)
