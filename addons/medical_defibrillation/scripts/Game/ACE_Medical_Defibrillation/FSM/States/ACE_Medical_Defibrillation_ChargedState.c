@@ -24,6 +24,7 @@ class ACE_Medical_Defibrillation_ChargedState : ACE_Medical_Defibrillation_IDefi
 	{
 		super.OnUpdate(context, timeSlice);
 		
+		// TODO:
 		// Now local to defib component temporarily
 		/*
 		const float BEEP_INTERVAL = 250;

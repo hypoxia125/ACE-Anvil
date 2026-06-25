@@ -32,6 +32,8 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	
 	protected AudioHandle m_pCurrentSound;
 	
+	protected ACE_Medical_Defibrillation_Settings m_pSettings;
+	
 	//------------------------------------------------------------------------------------------------
 	override protected void OnPostInit(IEntity owner)
 	{	
@@ -39,12 +41,13 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 		
 		SetEventMask(owner, EntityEvent.FRAME);
 		
-		ACE_Medical_Defibrillation_Settings settings = GetDefibSystemSettings();
-		if (settings)
+		m_pSettings = ACE_SettingsHelperT<ACE_Medical_Defibrillation_Settings>.GetModSettings();
+		
+		if (m_pSettings) // m_pSettings will be null on world creation in workbench
 		{
-			m_fCPRCooldownDuration = settings.m_fAED_CPRCooldownDuration;
-			m_bPlayCPRPacingBeats = settings.m_bAED_PlayCPRPacingBeats;
-			m_fAnalysisDuration = settings.m_fAED_AnalysisDuration;
+			m_fCPRCooldownDuration = m_pSettings.m_fAED_CPRCooldownDuration;
+			m_bPlayCPRPacingBeats = m_pSettings.m_bAED_PlayCPRPacingBeats;
+			m_fAnalysisDuration = m_pSettings.m_fAED_AnalysisDuration;
 		}
 		
 		// Convert to milliseconds and make data
@@ -75,16 +78,6 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	static ACE_Medical_Defibrillation_Settings GetDefibSystemSettings()
-	{
-		ACE_Medical_Defibrillation_Settings settings = ACE_SettingsHelperT<ACE_Medical_Defibrillation_Settings>.GetModSettings();
-		if (!settings)
-			return null;
-		
-		return settings;
-	}
-	
-	//------------------------------------------------------------------------------------------------
 	//! Temporary until a client side sound manager system is possibly implimented
 	override void EOnFrame(IEntity owner, float timeSlice)
 	{
@@ -95,7 +88,7 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 		{
 			m_pSounds.m_fLastCPRPaceTimer += timeSlice;
 			
-			if (m_pSounds.m_fLastCPRPaceTimer >= ACE_Medical_Defibrillation_GlobalHelpers.BpmToMs(102))
+			if (m_pSounds.m_fLastCPRPaceTimer >= ACE_Medical_Defibrillation_ConversionHelper.BpmToMs(102))
 			{
 				PlaySound(ACE_Medical_Defibrillation_DefibSounds.SOUNDCPRBEEP);
 				m_pSounds.m_fLastCPRPaceTimer = 0;
@@ -155,6 +148,8 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	void Reset()
 	{
 		SetPatient(null);
+		
+		m_pSettings = ACE_SettingsHelperT<ACE_Medical_Defibrillation_Settings>.GetModSettings();
 		
 		// Convert to milliseconds and make data
 		m_pProgressData = new ACE_Medical_Defibrillation_DefibProgressData(this,
@@ -250,11 +245,9 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	    ACE_Medical_VitalsComponent vitals = ACE_Medical_VitalsComponent.Cast(m_pPatient.FindComponent(ACE_Medical_VitalsComponent));
 	    if (!vitals)
 	        return false;
-
-	    ACE_Medical_Defibrillation_Settings settings = GetDefibSystemSettings();
 	    
 	    // Calculate shock success chance
-	    float shockSuccessChance = CalculateShockSuccessChance(vitals);
+	    float shockSuccessChance = ACE_Medical_Defibrillation_CalculationsHelper.CalculateTotalShockChance(vitals, m_pSettings);
 	    
 	    // Roll for shock success
 	    float randomRoll = Math.RandomFloat01();
@@ -274,21 +267,6 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	    m_pProgressData.SetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown, cprCooldown);
 	    
 	    return shockSuccessful;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	static float CalculateShockSuccessChance(ACE_Medical_VitalsComponent vitals)
-	{
-	    int shocks = vitals.GetShocksDelivered();
-	    float timeSinceLastShock = vitals.GetTimeSinceLastShock();
-	    ACE_Medical_Defibrillation_Settings settings = GetDefibSystemSettings();
-	    
-	    float spamPenalty = ACE_Medical_Defibrillation_DecayCalculator.CalculateSpamPenalty(vitals);
-	    float shockChance = ACE_Medical_Defibrillation_DecayCalculator.CalculateShockChance(vitals);
-	    
-	    float finalChance = shockChance * (1.0 - spamPenalty);
-	    
-	    return Math.Clamp(finalChance, 0.0, settings.m_fBaseShockSuccessChance);
 	}
 	
 	//------------------------------------------------------------------------------------------------
