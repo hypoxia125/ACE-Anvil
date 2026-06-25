@@ -1,15 +1,5 @@
-class ACE_Medical_Defibrillation_UserAction_DefibDisconnect : ScriptedUserAction
+class ACE_Medical_Defibrillation_ScriptedUserAction_DefibShock : ScriptedUserAction
 {
-	//------------------------------------------------------------------------------------------------	
-	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
-	{
-		super.Init(pOwnerEntity, pManagerComponent);
-		
-		World world = GetGame().GetWorld();
-		if (!world)
-			return;
-	}
-	
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
@@ -19,11 +9,11 @@ class ACE_Medical_Defibrillation_UserAction_DefibDisconnect : ScriptedUserAction
 		if (!defibComponent)
 			return false;
 		
-		IEntity patient = defibComponent.GetPatient();
-		if (!patient)
-		{
+		if (!defibComponent.GetPatient())
 			return false;
-		}
+		
+		if (defibComponent.GetDefibStateID() != ACE_Medical_Defibrillation_EDefibStateID.CHARGED)
+			return false;
 		
 		return true;
 	}
@@ -38,12 +28,15 @@ class ACE_Medical_Defibrillation_UserAction_DefibDisconnect : ScriptedUserAction
 		if (!defibComponent)
 			return;
 		
-		defibComponent.ResetPatient();
+		if (defibComponent.ShockPatient())
+		{
+			ACE_Medical_NetworkComponent networkComponent = ACE_Medical_Defibrillation_NetworkManager.GetMedicalNetworkComponent(SCR_ChimeraCharacter.Cast(pUserEntity));
+			if (!networkComponent)
+				return;
+			
+			networkComponent.RequestDefibNotification(ENotification.ACE_MEDICAL_DEFIBRILLATION_SHOCKDELIVERED, SCR_ChimeraCharacter.Cast(pOwnerEntity));
+		}
 		
-		ACE_Medical_NetworkComponent networkComponent = ACE_Medical_Defibrillation_NetworkManager.GetMedicalNetworkComponent(SCR_ChimeraCharacter.Cast(pUserEntity));
-		if (!networkComponent)
-			return;
-
-		networkComponent.RequestDefibNotification(ENotification.ACE_MEDICAL_DEFIBRILLATION_DISCONNECTED, SCR_ChimeraCharacter.Cast(pOwnerEntity));
+		return;
 	}
 }

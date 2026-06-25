@@ -1,4 +1,4 @@
-class ACE_Medical_Defibrillation_UserActions_DefibConnect : ScriptedUserAction
+class ACE_Medical_Defibrillation_ScriptedUserAction_DefibConnect : ACE_Medical_Defibrillation_ScriptedUserAction
 {
 	protected float m_fLastUpdateTime;
 	
