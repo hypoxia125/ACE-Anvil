@@ -69,7 +69,7 @@ class ACE_Medical_Defibrillation_ScriptedUserAction_DefibConnect : ACE_Medical_D
 		if (!defibComponent)
 			return;
 		
-		ACE_Medical_NetworkComponent networkComponent = ACE_Medical_Defibrillation_NetworkManager.GetMedicalNetworkComponent(SCR_ChimeraCharacter.Cast(pUserEntity));
+		ACE_Medical_NetworkComponent networkComponent = ACE_Medical_Defibrillation_ComponentManager.GetMedicalNetworkComponent(SCR_ChimeraCharacter.Cast(pUserEntity));
 		if (!networkComponent)
 			return;
 		

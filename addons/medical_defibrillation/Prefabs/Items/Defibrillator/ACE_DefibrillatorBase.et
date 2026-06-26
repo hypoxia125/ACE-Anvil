@@ -61,6 +61,8 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
     }
    }
   }
+  ACE_Medical_Defibrillation_DefibSoundManagerComponent "{69B5407ACE8A5084}" {
+  }
  }
  coords 0 0 0
 }

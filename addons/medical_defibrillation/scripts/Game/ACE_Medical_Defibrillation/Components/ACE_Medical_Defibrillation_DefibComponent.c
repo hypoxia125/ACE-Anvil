@@ -7,7 +7,7 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	[Attribute("1", UIWidgets.ComboBox, "Defibrillator Emulation Type", "", ParamEnumArray.FromEnum(ACE_Medical_Defibrillation_EDefibEmulation), category: "General Settings")]
 	protected ACE_Medical_Defibrillation_EDefibEmulation m_eDefibrillatorEmulation;
 	
-	protected float m_fChargeDuration = 5.5;
+	protected float m_fChargeDuration;
 	protected float m_fAnalysisDuration;
 	protected float m_fCPRCooldownDuration;
 	protected bool m_bPlayCPRPacingBeats;
@@ -25,11 +25,6 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	[RplProp(onRplName: "OnDefibProgressChanged"), RplRpc(RplChannel.Unreliable, RplRcver.Broadcast)]
 	protected ref ACE_Medical_Defibrillation_DefibProgressData m_pProgressData;
 	
-	ref ACE_Medical_Defibrillation_DefibSoundTimers m_pSoundTimers;
-	
-	protected bool m_bCPRBeepLoop = false;
-	protected bool m_bChargedBeepLoop = false;
-	
 	protected ACE_Medical_Defibrillation_Settings m_pSettings;
 	
 	//------------------------------------------------------------------------------------------------
@@ -46,6 +41,7 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 			m_fCPRCooldownDuration = m_pSettings.m_fAED_CPRCooldownDuration;
 			m_bPlayCPRPacingBeats = m_pSettings.m_bAED_PlayCPRPacingBeats;
 			m_fAnalysisDuration = m_pSettings.m_fAED_AnalysisDuration;
+			m_fChargeDuration = m_pSettings.m_fDefibChargeTime;
 		}
 		
 		// Convert to milliseconds and make data
@@ -53,9 +49,6 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 																		   m_fAnalysisDuration * 1000,
 																		   m_fChargeDuration * 1000,
 																		   m_fCPRCooldownDuration * 1000);
-		
-		// Create sound data
-		m_pSoundTimers = new ACE_Medical_Defibrillation_DefibSoundTimers();
 		
 		// Subscribe to the InventoryItemComponent OnParentSlotChanged
 		// Determines if defib is already on the ground to add it to the system
@@ -73,59 +66,6 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 		
 		// Subscribe to data change events for replication
 		m_pProgressData.m_OnDataChanged.Insert(OnDefibProgressChanged);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Temporary until a client side sound manager system is possibly implimented
-	override void EOnFrame(IEntity owner, float timeSlice)
-	{
-		timeSlice *= 1000;
-		
-		// CPR Beep
-		if (m_bPlayCPRPacingBeats && m_bCPRBeepLoop)
-		{
-			m_pSoundTimers.m_fLastCPRPaceTimer += timeSlice;
-			
-			if (m_pSoundTimers.m_fLastCPRPaceTimer >= ACE_Medical_Defibrillation_ConversionHelper.BpmToMs(102))
-			{
-				PlaySound(ACE_Medical_Defibrillation_SharedSounds.SOUNDCPRBEEP);
-				m_pSoundTimers.m_fLastCPRPaceTimer = 0;
-			}
-		}
-		
-		// Charged Sound
-		if (m_bChargedBeepLoop)
-		{
-			const float BEEP_INTERVAL = 250;
-			
-			if (m_pSoundTimers.m_fChargedBeepTimer >= BEEP_INTERVAL)
-			{
-				if (Math.Mod(m_pSoundTimers.m_iChargedBeepPhase, 2) == 0)
-				{
-					PlaySound(ACE_Medical_Defibrillation_SharedSounds.SOUNDCHARGEDBEEPLOW);
-				}
-				else
-				{
-					PlaySound(ACE_Medical_Defibrillation_SharedSounds.SOUNDCHARGEDBEEPHIGH);
-				}
-				
-				// Advance to next phase and reset timer
-				m_pSoundTimers.m_iChargedBeepPhase++;
-				m_pSoundTimers.m_fChargedBeepTimer = 0;
-			}
-			
-			m_pSoundTimers.m_fChargedBeepTimer += timeSlice;
-		}
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	SoundComponent GetSoundComponent()
-	{
-		SoundComponent component = SoundComponent.Cast(GetOwner().FindComponent(SoundComponent));
-		if (!component)
-			return null;
-		
-		return component;
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -165,7 +105,12 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 																		   m_fCPRCooldownDuration * 1000);
 		
 		// Create sound data
-		m_pSoundTimers = new ACE_Medical_Defibrillation_DefibSoundTimers();
+		ACE_Medical_Defibrillation_DefibSoundManagerComponent manager = ACE_Medical_Defibrillation_ComponentManager.GetDefibSoundManagerComponent(GetOwner());
+		if (!manager)
+		{
+			manager.Reset();
+		}
+		
 		m_eDefibrillatorStateID = ACE_Medical_Defibrillation_EDefibStateID.DISCONNECTED;
 	}
 	
@@ -244,7 +189,7 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	bool ShockPatient()
+	bool TryShockPatient()
 	{
 	    if (!m_pPatient)
 	        return false;
@@ -266,13 +211,19 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	        vitals.ModifyShocksDelivered(1);
 			vitals.ResetTimeSinceLastShock();
 	    }
-		
-		PlaySoundOnPatient(ACE_Medical_Defibrillation_SharedSounds.SOUNDSHOCKTHUMP);	    
+		    
 	    SetDefibStateID(ACE_Medical_Defibrillation_EDefibStateID.CONNECTED);
 	    
 	    float cprCooldown = m_pProgressData.GetDuration(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown);
 	    m_pProgressData.SetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown, cprCooldown);
 	    
+		// Play sounds
+		ACE_Medical_Defibrillation_DefibSoundManagerComponent manager = ACE_Medical_Defibrillation_ComponentManager.GetDefibSoundManagerComponent(GetOwner());
+		if (manager)
+		{
+			manager.PlaySoundOnPatientGlobal(ACE_Medical_Defibrillation_SharedSounds.SOUNDSHOCKTHUMP);
+		}
+		
 	    return shockSuccessful;
 	}
 	
@@ -317,92 +268,7 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	{
 		m_pPatient = ACE_Medical_Defibrillation_ReplicationHelper.GetEntityByRplId(m_iPatientRplId);
 	}
-	
-	//------------------------------------------------------------------------------------------------
-	void SetCPRBeepLoop(bool state = false)
-	{
-		m_bCPRBeepLoop = state;
-		Replication.BumpMe();
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void SetChargedBeepLoop(bool state = false)
-	{
-		m_bChargedBeepLoop = state;
-		Replication.BumpMe();
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void PlaySound(string soundName, bool terminatePrevious = false, bool isLoop = false)
-	{
-		if (!Replication.IsServer())
-			return;
-		
-		RPC_PlaySound(soundName, terminatePrevious, isLoop);
-		Rpc(RPC_PlaySound, soundName, terminatePrevious, isLoop);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void TerminateSound(bool terminateAll = false)
-	{
-		if (!Replication.IsServer())
-			return;
-		
-		RPC_TerminateAllSounds();
-		Rpc(RPC_TerminateAllSounds);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RPC_PlaySound(string soundName, bool terminatePrevious, bool isLoop)
-	{		
-		if (isLoop)
-			return;
-		
-		if (terminatePrevious)
-			TerminateSound();
-		
-		SoundComponent sndComp = GetSoundComponent();
-		if (sndComp)
-			sndComp.SoundEvent(soundName);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RPC_TerminateAllSounds()
-	{
-		SoundComponent sndComp = GetSoundComponent();
-		if (!sndComp)
-			return;
-		
-		sndComp.TerminateAll();
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void PlaySoundOnPatient(string soundName)
-	{
-		if (!Replication.IsServer())
-			return;
-		
-		RPC_PlaySoundOnPatient(ACE_Medical_Defibrillation_SharedSounds.SOUNDSHOCKTHUMP);
-		Rpc(RPC_PlaySoundOnPatient, ACE_Medical_Defibrillation_SharedSounds.SOUNDSHOCKTHUMP);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RPC_PlaySoundOnPatient(string soundName)
-	{
-		IEntity patient = GetPatient();
-		if (!patient)
-			return;
-		
-		CharacterSoundComponent sndComponent = CharacterSoundComponent.Cast(patient.FindComponent(CharacterSoundComponent));
-		if (!sndComponent)
-			return;
-		
-		sndComponent.SoundEvent(soundName);
-	}
-	
+
 	//------------------------------------------------------------------------------------------------
 	bool GetDebugAlwaysShockableRhythm()
 	{

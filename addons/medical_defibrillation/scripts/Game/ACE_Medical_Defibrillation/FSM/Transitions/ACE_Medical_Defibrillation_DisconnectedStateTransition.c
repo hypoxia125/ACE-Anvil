@@ -2,8 +2,14 @@ class ACE_Medical_Defibrillation_DisconnectedStateTransition : ACE_FSM_ITransiti
 {
 	//------------------------------------------------------------------------------------------------
 	override void OnPerform(ACE_Medical_Defibrillation_DefibContext context)
-	{		
-		context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_SharedSounds.SOUNDDISCONNECTED);
+	{	
+		ACE_Medical_Defibrillation_DefibSoundManagerComponent manager = ACE_Medical_Defibrillation_ComponentManager.GetDefibSoundManagerComponent(
+			context.m_pDefibrillator.GetOwner()
+		);
+		if (!manager)
+			return;
+		
+		manager.PlaySoundGlobal(ACE_Medical_Defibrillation_SharedSounds.SOUNDDISCONNECTED);
 	}
 	
 	//------------------------------------------------------------------------------------------------

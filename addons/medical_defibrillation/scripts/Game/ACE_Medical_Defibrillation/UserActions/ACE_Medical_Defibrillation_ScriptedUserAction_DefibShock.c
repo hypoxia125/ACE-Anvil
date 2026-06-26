@@ -28,9 +28,9 @@ class ACE_Medical_Defibrillation_ScriptedUserAction_DefibShock : ScriptedUserAct
 		if (!defibComponent)
 			return;
 		
-		if (defibComponent.ShockPatient())
+		if (defibComponent.TryShockPatient())
 		{
-			ACE_Medical_NetworkComponent networkComponent = ACE_Medical_Defibrillation_NetworkManager.GetMedicalNetworkComponent(SCR_ChimeraCharacter.Cast(pUserEntity));
+			ACE_Medical_NetworkComponent networkComponent = ACE_Medical_Defibrillation_ComponentManager.GetMedicalNetworkComponent(SCR_ChimeraCharacter.Cast(pUserEntity));
 			if (!networkComponent)
 				return;
 			
