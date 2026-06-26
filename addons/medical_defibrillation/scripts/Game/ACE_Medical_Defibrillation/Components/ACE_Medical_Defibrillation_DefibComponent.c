@@ -25,12 +25,10 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	[RplProp(onRplName: "OnDefibProgressChanged"), RplRpc(RplChannel.Unreliable, RplRcver.Broadcast)]
 	protected ref ACE_Medical_Defibrillation_DefibProgressData m_pProgressData;
 	
-	ref ACE_Medical_Defibrillation_DefibSounds m_pSounds;
+	ref ACE_Medical_Defibrillation_DefibSoundTimers m_pSoundTimers;
 	
 	protected bool m_bCPRBeepLoop = false;
 	protected bool m_bChargedBeepLoop = false;
-	
-	protected AudioHandle m_pCurrentSound;
 	
 	protected ACE_Medical_Defibrillation_Settings m_pSettings;
 	
@@ -57,7 +55,7 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 																		   m_fCPRCooldownDuration * 1000);
 		
 		// Create sound data
-		m_pSounds = new ACE_Medical_Defibrillation_DefibSounds();
+		m_pSoundTimers = new ACE_Medical_Defibrillation_DefibSoundTimers();
 		
 		// Subscribe to the InventoryItemComponent OnParentSlotChanged
 		// Determines if defib is already on the ground to add it to the system
@@ -86,12 +84,12 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 		// CPR Beep
 		if (m_bPlayCPRPacingBeats && m_bCPRBeepLoop)
 		{
-			m_pSounds.m_fLastCPRPaceTimer += timeSlice;
+			m_pSoundTimers.m_fLastCPRPaceTimer += timeSlice;
 			
-			if (m_pSounds.m_fLastCPRPaceTimer >= ACE_Medical_Defibrillation_ConversionHelper.BpmToMs(102))
+			if (m_pSoundTimers.m_fLastCPRPaceTimer >= ACE_Medical_Defibrillation_ConversionHelper.BpmToMs(102))
 			{
-				PlaySound(ACE_Medical_Defibrillation_DefibSounds.SOUNDCPRBEEP);
-				m_pSounds.m_fLastCPRPaceTimer = 0;
+				PlaySound(ACE_Medical_Defibrillation_SharedSounds.SOUNDCPRBEEP);
+				m_pSoundTimers.m_fLastCPRPaceTimer = 0;
 			}
 		}
 		
@@ -100,23 +98,23 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 		{
 			const float BEEP_INTERVAL = 250;
 			
-			if (m_pSounds.m_fChargedBeepTimer >= BEEP_INTERVAL)
+			if (m_pSoundTimers.m_fChargedBeepTimer >= BEEP_INTERVAL)
 			{
-				if (Math.Mod(m_pSounds.m_iChargedBeepPhase, 2) == 0)
+				if (Math.Mod(m_pSoundTimers.m_iChargedBeepPhase, 2) == 0)
 				{
-					PlaySound(ACE_Medical_Defibrillation_DefibSounds.SOUNDCHARGEDBEEPLOW);
+					PlaySound(ACE_Medical_Defibrillation_SharedSounds.SOUNDCHARGEDBEEPLOW);
 				}
 				else
 				{
-					PlaySound(ACE_Medical_Defibrillation_DefibSounds.SOUNDCHARGEDBEEPHIGH);
+					PlaySound(ACE_Medical_Defibrillation_SharedSounds.SOUNDCHARGEDBEEPHIGH);
 				}
 				
 				// Advance to next phase and reset timer
-				m_pSounds.m_iChargedBeepPhase++;
-				m_pSounds.m_fChargedBeepTimer = 0;
+				m_pSoundTimers.m_iChargedBeepPhase++;
+				m_pSoundTimers.m_fChargedBeepTimer = 0;
 			}
 			
-			m_pSounds.m_fChargedBeepTimer += timeSlice;
+			m_pSoundTimers.m_fChargedBeepTimer += timeSlice;
 		}
 	}
 	
@@ -167,7 +165,7 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 																		   m_fCPRCooldownDuration * 1000);
 		
 		// Create sound data
-		m_pSounds = new ACE_Medical_Defibrillation_DefibSounds();
+		m_pSoundTimers = new ACE_Medical_Defibrillation_DefibSoundTimers();
 		m_eDefibrillatorStateID = ACE_Medical_Defibrillation_EDefibStateID.DISCONNECTED;
 	}
 	
@@ -269,7 +267,7 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 			vitals.ResetTimeSinceLastShock();
 	    }
 		
-		PlaySoundOnPatient(ACE_Medical_Defibrillation_DefibSounds.SOUNDSHOCKTHUMP);	    
+		PlaySoundOnPatient(ACE_Medical_Defibrillation_SharedSounds.SOUNDSHOCKTHUMP);	    
 	    SetDefibStateID(ACE_Medical_Defibrillation_EDefibStateID.CONNECTED);
 	    
 	    float cprCooldown = m_pProgressData.GetDuration(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown);
@@ -321,12 +319,6 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	AudioHandle GetCurrentSound()
-	{
-		return m_pCurrentSound;
-	}
-	
-	//------------------------------------------------------------------------------------------------
 	void SetCPRBeepLoop(bool state = false)
 	{
 		m_bCPRBeepLoop = state;
@@ -356,15 +348,15 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 		if (!Replication.IsServer())
 			return;
 		
-		RPC_TerminateSound(terminateAll);
-		Rpc(RPC_TerminateSound, terminateAll);
+		RPC_TerminateAllSounds();
+		Rpc(RPC_TerminateAllSounds);
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RPC_PlaySound(string soundName, bool terminatePrevious, bool isLoop)
 	{		
-		if (isLoop && m_pCurrentSound)
+		if (isLoop)
 			return;
 		
 		if (terminatePrevious)
@@ -372,23 +364,18 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 		
 		SoundComponent sndComp = GetSoundComponent();
 		if (sndComp)
-			m_pCurrentSound = sndComp.SoundEvent(soundName);
+			sndComp.SoundEvent(soundName);
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RPC_TerminateSound(bool terminateAll)
+	void RPC_TerminateAllSounds()
 	{
 		SoundComponent sndComp = GetSoundComponent();
 		if (!sndComp)
 			return;
 		
-		if (terminateAll)
-			sndComp.TerminateAll();
-		else
-			sndComp.Terminate(m_pCurrentSound);
-		
-		m_pCurrentSound = null;
+		sndComp.TerminateAll();
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -397,8 +384,8 @@ class ACE_Medical_Defibrillation_DefibComponent : ScriptComponent
 		if (!Replication.IsServer())
 			return;
 		
-		RPC_PlaySoundOnPatient(ACE_Medical_Defibrillation_DefibSounds.SOUNDSHOCKTHUMP);
-		Rpc(RPC_PlaySoundOnPatient, ACE_Medical_Defibrillation_DefibSounds.SOUNDSHOCKTHUMP);
+		RPC_PlaySoundOnPatient(ACE_Medical_Defibrillation_SharedSounds.SOUNDSHOCKTHUMP);
+		Rpc(RPC_PlaySoundOnPatient, ACE_Medical_Defibrillation_SharedSounds.SOUNDSHOCKTHUMP);
 	}
 	
 	//------------------------------------------------------------------------------------------------

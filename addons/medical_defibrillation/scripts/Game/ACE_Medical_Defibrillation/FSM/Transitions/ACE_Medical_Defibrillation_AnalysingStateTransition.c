@@ -42,18 +42,18 @@ class ACE_Medical_Defibrillation_AnalysingStateTransition : ACE_FSM_ITransition<
 		ACE_Medical_VitalsComponent vitals = ACE_Medical_VitalsComponent.Cast(patient.FindComponent(ACE_Medical_VitalsComponent));
 		if (vitals.IsCPRPerformed())
 		{
-			if (context.m_pDefibrillator.m_pSounds.m_fPatientTouchTimer >= 3500 &&
+			if (context.m_pDefibrillator.m_pSoundTimers.m_fPatientTouchTimer >= 3500 &&
 				context.m_pDefibrillator.GetDefibProgressData().GetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown) == 0)
 			{
-				context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_DefibSounds.SOUNDDONOTTOUCHPATIENT);
-				context.m_pDefibrillator.m_pSounds.m_fPatientTouchTimer = 0;
+				context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_SharedSounds.SOUNDDONOTTOUCHPATIENT);
+				context.m_pDefibrillator.m_pSoundTimers.m_fPatientTouchTimer = 0;
 			}
-			context.m_pDefibrillator.m_pSounds.m_fPatientTouchTimer += timeSlice;
+			context.m_pDefibrillator.m_pSoundTimers.m_fPatientTouchTimer += timeSlice;
 			return false;
 		}
 		else
 		{
-			context.m_pDefibrillator.m_pSounds.m_fPatientTouchTimer = 3500;
+			context.m_pDefibrillator.m_pSoundTimers.m_fPatientTouchTimer = 3500;
 		}
 		
 		// Defib in Connected state for at least 2 seconds

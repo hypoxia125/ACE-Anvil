@@ -23,7 +23,7 @@ class ACE_Medical_Defibrillation_ConnectedStateTransition : ACE_FSM_ITransition<
 	//------------------------------------------------------------------------------------------------
 	override void OnPerform(ACE_Medical_Defibrillation_DefibContext context)
 	{		
-		context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_DefibSounds.SOUNDCONNECTED);
+		context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_SharedSounds.SOUNDCONNECTED);
 	}
 	
 	//------------------------------------------------------------------------------------------------

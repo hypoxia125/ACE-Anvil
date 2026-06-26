@@ -7,8 +7,8 @@ class ACE_Medical_Defibrillation_ConnectedState : ACE_Medical_Defibrillation_IDe
 		
 		context.m_pDefibrillator.SetDefibStateID(ACE_Medical_Defibrillation_EDefibStateID.CONNECTED);
 		
-		context.m_pDefibrillator.m_pSounds.m_fContinueCPRTimer = 10000 - 2000;
-		context.m_pDefibrillator.m_pSounds.m_fLastCPRPaceTimer = -2000; // Have a delay on the first one so that previous sound can end
+		context.m_pDefibrillator.m_pSoundTimers.m_fContinueCPRTimer = 10000 - 2000;
+		context.m_pDefibrillator.m_pSoundTimers.m_fLastCPRPaceTimer = -2000; // Have a delay on the first one so that previous sound can end
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -21,13 +21,13 @@ class ACE_Medical_Defibrillation_ConnectedState : ACE_Medical_Defibrillation_IDe
 		
 		if (context.m_pDefibrillator.GetDefibProgressData().GetTimer(ACE_Medical_Defibrillation_EDefibProgressCategory.CPRCooldown) > 0)
 		{
-			context.m_pDefibrillator.m_pSounds.m_fContinueCPRTimer += timeSlice;
+			context.m_pDefibrillator.m_pSoundTimers.m_fContinueCPRTimer += timeSlice;
 			
 			// Remind players to do CPR
-			if (context.m_pDefibrillator.m_pSounds.m_fContinueCPRTimer >= 10000)
+			if (context.m_pDefibrillator.m_pSoundTimers.m_fContinueCPRTimer >= 10000)
 			{
-				context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_DefibSounds.SOUNDCPRREMINDER);
-				context.m_pDefibrillator.m_pSounds.m_fContinueCPRTimer = 0;
+				context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_SharedSounds.SOUNDCPRREMINDER);
+				context.m_pDefibrillator.m_pSoundTimers.m_fContinueCPRTimer = 0;
 			}
 			
 			// Temp Disable Until Better Networking - On remote clients it comes out to 600ms so there is some delay

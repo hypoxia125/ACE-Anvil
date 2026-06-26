@@ -7,8 +7,8 @@ class ACE_Medical_Defibrillation_ChargedState : ACE_Medical_Defibrillation_IDefi
 		
 		context.m_pDefibrillator.SetDefibStateID(ACE_Medical_Defibrillation_EDefibStateID.CHARGED);
 		
-		context.m_pDefibrillator.m_pSounds.m_fChargedBeepTimer = 0;
-		context.m_pDefibrillator.m_pSounds.m_iChargedBeepPhase = 0;
+		context.m_pDefibrillator.m_pSoundTimers.m_fChargedBeepTimer = 0;
+		context.m_pDefibrillator.m_pSoundTimers.m_iChargedBeepPhase = 0;
 		
 		context.m_pDefibrillator.SetChargedBeepLoop(true);
 	}
@@ -29,22 +29,22 @@ class ACE_Medical_Defibrillation_ChargedState : ACE_Medical_Defibrillation_IDefi
 		/*
 		const float BEEP_INTERVAL = 250;
 		
-		if (context.m_pDefibrillator.m_pSounds.m_fChargedBeepTimer >= BEEP_INTERVAL)
+		if (context.m_pDefibrillator.m_pSoundTimers.m_fChargedBeepTimer >= BEEP_INTERVAL)
 		{
-			if (Math.Mod(context.m_pDefibrillator.m_pSounds.m_iChargedBeepPhase, 2) == 0)
+			if (Math.Mod(context.m_pDefibrillator.m_pSoundTimers.m_iChargedBeepPhase, 2) == 0)
 			{
-				context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_DefibSounds.SOUNDCHARGEDBEEPLOW);
+				context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_DefibSoundTimers.SOUNDCHARGEDBEEPLOW);
 			}
 			else
 			{
-				context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_DefibSounds.SOUNDCHARGEDBEEPHIGH);
+				context.m_pDefibrillator.PlaySound(ACE_Medical_Defibrillation_DefibSoundTimers.SOUNDCHARGEDBEEPHIGH);
 			}
 			
 			// Advance to next phase and reset timer
-			context.m_pDefibrillator.m_pSounds.m_iChargedBeepPhase++;
-			context.m_pDefibrillator.m_pSounds.m_fChargedBeepTimer = 0;
+			context.m_pDefibrillator.m_pSoundTimers.m_iChargedBeepPhase++;
+			context.m_pDefibrillator.m_pSoundTimers.m_fChargedBeepTimer = 0;
 		}
-		context.m_pDefibrillator.m_pSounds.m_fChargedBeepTimer += timeSlice;
+		context.m_pDefibrillator.m_pSoundTimers.m_fChargedBeepTimer += timeSlice;
 		*/
 	}
 }
