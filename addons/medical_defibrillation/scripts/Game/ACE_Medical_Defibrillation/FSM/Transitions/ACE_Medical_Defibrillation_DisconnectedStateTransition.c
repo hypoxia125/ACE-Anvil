@@ -9,6 +9,7 @@ class ACE_Medical_Defibrillation_DisconnectedStateTransition : ACE_FSM_ITransiti
 		if (!manager)
 			return;
 		
+		manager.TerminateAllSoundsGlobal();
 		manager.PlaySoundGlobal(ACE_Medical_Defibrillation_SharedSounds.SOUNDDISCONNECTED);
 	}
 	

@@ -43,50 +43,46 @@ class ACE_Medical_Defibrillation_DefibSoundManagerComponent : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	//! Plays a sound on the defibrillator's sound component.
-	bool PlaySoundGlobal(string soundName)
+	void PlaySoundGlobal(string soundName)
 	{
 		if (!Replication.IsServer())
-			return false;
+			return;
 		
 		RPC_PlaySound(soundName);
 		Rpc(RPC_PlaySound, soundName);
-		return true;
+		return;
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Terminates all sounds from the defibrillator.
-	bool TerminateAllSoundsGlobal()
+	void TerminateAllSoundsGlobal()
 	{
 		if (!Replication.IsServer())
-			return false;
+			return;
 		
 		RPC_TerminateAllSounds();
 		Rpc(RPC_TerminateAllSounds);
-		return true;
+		return;
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Plays a sound on the patient's sound component.
-	bool PlaySoundOnPatientGlobal(string soundName)
+	void PlaySoundOnPatientGlobal(string soundName)
 	{
 		if (!Replication.IsServer())
-			return false;
+			return;
 		
 		ACE_Medical_Defibrillation_DefibComponent defibComponent = ACE_Medical_Defibrillation_ComponentManager.GetDefibComponent(GetOwner());
 		if (!defibComponent)
-			return false;
+			return;
 		
 		IEntity patient = defibComponent.GetPatient();
 		if (!patient)
-			return false;
-		
-		CharacterSoundComponent sndComponent = CharacterSoundComponent.Cast(patient.FindComponent(CharacterSoundComponent));
-		if (!sndComponent)
-			return false;
+			return;
 		
 		RPC_PlaySoundOnPatient(soundName);
 		Rpc(RPC_PlaySoundOnPatient, soundName);
-		return true;
+		return;
 	}
 	
 	//------------------------------------------------------------------------------------------------
