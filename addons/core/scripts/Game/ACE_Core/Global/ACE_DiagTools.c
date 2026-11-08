@@ -31,5 +31,28 @@ class ACE_DiagTools
 		
 		return false;
 	}
+	
+	static bool GetDiagTargetDefibrillator(out IEntity target, out string targetType)
+	{
+		CameraManager cameraManager = GetGame().GetCameraManager();
+		if (!cameraManager)
+			return false;
+		
+		CameraBase camera = cameraManager.CurrentCamera();
+		if (!camera)
+			return false;
+		
+		target = IEntity.Cast(camera.GetCursorTarget());
+		if (target)
+		{
+			if (ACE_Medical_Defibrillation_DefibComponent.Cast(target.FindComponent(ACE_Medical_Defibrillation_DefibComponent)))
+				return false;
+			
+			targetType = "Target";
+			return true;
+		}
+		
+		return false;
+	}
 }
 #endif
